@@ -1,0 +1,22 @@
+Notes about Terraform
+
+=======================================
+
+Terraform - Open Source project from HashiCorp, created in 2014 year, its great tool for creating infrustructure using code (IaaC)
+
+It's a programming language for cloud platforms
+
+It's compatible with:
+>AWS
+>GCP
+>Azure
+>Yandex
+>etc.
+
+Syntax fo code - Hashicorp Configuration Language (HCL)
+Default txt files
+All txt editors
+No COMPILATION
+ALL PLATFORMS
+
+
