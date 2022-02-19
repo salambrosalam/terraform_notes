@@ -1,4 +1,4 @@
-Notes about Terraform
+Notes about Terraform v1.1.6
 
 =======================================
 
@@ -18,5 +18,68 @@ Default txt files
 All txt editors
 No COMPILATION
 ALL PLATFORMS
+
+========================================
+
+When you wrote your script, you shold use command:
+>terraform init (to add additional file for your privider)
+>terraform plan (will check your file and show what IF)
+>terraform apply (and click yes to create resources)
+
+========================================
+
+Creating resources
+
+#1. Add which cloud we will use
+Example of creating resources (you need AWS acc with access to CLI)
+
+provider "aws" {
+  access_key = "your acces_key"
+  secret_key = "your secret_key"
+  region = "us-east-2" (some region)
+}
+
+resource "aws_instance" "my_ubuntu" {
+  #count = 3 how much servers you want to create
+  ami = "ami-0fb653ca2d3203ac1"
+  instance_type = "t2.micro"
+}
+
+=========================================
+
+Changing AWS Resources 
+
+provider "aws" {
+  access_key = "your acces_key"
+  secret_key = "your secret_key"
+  region = "us-east-2" (some region)
+}
+
+resource "aws_instance" "my_ubuntu" {
+  #count = 3 how much servers you want to create
+  ami = "ami-0fb653ca2d3203ac1"
+  instance_type = "t2.micro"
+
+  #Adding new parameter "Tags"
+
+  tags = {
+    Name = "new_name"
+    Owner = "Harry"
+  }
+}
+
+If you will add new tag from GUI, terraform will say that it's should be deleted (Cause it's not in code)
+
+===========================================
+
+Deleting Resources from terraform
+
+Good practice to save your credentials and region in system environment (or terminal session env)
+
+On windows in CMD :
+>set AWS_ACCESS_KEY_ID=your_access_key
+>set AWS_SECRET_ACCESS_KEY=your secret_access_key
+
+
 
 
