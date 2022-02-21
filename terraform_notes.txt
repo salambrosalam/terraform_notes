@@ -81,5 +81,117 @@ On windows in CMD :
 >set AWS_SECRET_ACCESS_KEY=your secret_access_key
 
 
+===========================================
 
+Using Script (AWS Bootstraping)
+
+Example in code:
+
+resource "aws_instance" "my_webserver" {
+  #count = 3 how much servers you want to create
+  ami = "ami-0fb653ca2d3203ac1"
+  instance_type = "t2.micro"
+  #Attaching security group to instance
+  vpc_security_group_ids = [aws_security_group.my_webserver.id]
+  #Bootstraping in AWS it's commands witch will run when server starts
+  user_data = <<EOF
+#!/bin/bash
+sudo apt-get -y update
+sudo apt-get -y install apache2
+sudo ufw allow 'Apache'
+sudo systemctl start apache2
+EOF
+}
+
+
+===========================================
+
+Using static external script files
+
+example in code
+
+resource "aws_instance" "my_webserver" {
+  #count = 3 how much servers you want to create
+  ami = "ami-0fb653ca2d3203ac1"
+  instance_type = "t2.micro"
+  #Attaching security group to instance
+  vpc_security_group_ids = [aws_security_group.my_webserver.id]
+  #Bootstraping in AWS it's commands witch will run when server starts
+  user_data = file("user_data.sh") #Path to script file 
+
+  tags = {
+    Name = "Web Server"
+    Owner = "Denis"
+  }
+}
+
+!!! If you change your script terraform will destroy previous server and run new with new script
+
+==============================================
+
+Template files
+
+Adding params to your template file, Dynamics external files
+
+Example of .tf file:
+
+resource "aws_instance" "my_webserver" {
+  #count = 3 how much servers you want to create
+  ami = "ami-0fb653ca2d3203ac1"
+  instance_type = "t2.micro"
+  #Attaching security group to instance
+  vpc_security_group_ids = [aws_security_group.my_webserver.id]
+  #Bootstraping in AWS it's commands witch will run when server starts
+  user_data = templatefile("user_data.sh.tpl", {
+    f_name = "Daniel",
+    l_name = "Nemch",
+    names = ["Max", "Drew"]
+  })
+
+  tags = {
+    Name = "Web Server"
+    Owner = "Denis"
+  }
+}
+
+Example of user_data.sh.tpl:
+
+#!/bin/bash
+sudo apt-get -y update
+sudo apt-get -y install apache2
+sudo ufw allow 'Apache'
+
+cat <<EOF > /var/www/html/index.html
+<html>
+<h2>Build by terraform</h2>
+<br>
+<h1>Owner name: ${f_name} ${l_name}
+%{ for x in names ~}
+<div>
+  Hello to ${x}
+</div>
+%{ endfor ~}
+</html>
+EOF
+
+sudo systemctl start apache2 
+
+=================================================
+
+Dynamic Code blocks
+
+  #Dynamic code block
+  dynamic "ingress" {
+    for_each = ["80", "443", "22"]
+    content {
+      description      = "HTTP from VPC"
+      from_port        = ingress.value
+      to_port          = ingress.value
+      protocol         = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+
+will create content by replacing items 
 
